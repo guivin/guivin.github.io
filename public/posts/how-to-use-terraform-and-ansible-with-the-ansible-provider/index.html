@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Liste - http://localhost:1313/">
+    <title>How to Couple Terraform and Ansible With the Ansible Provider | Guivin</title>
+    <meta name="description" content="Personal Blog of a Site Reliabity Engineer">
+    <meta property="og:url" content="http://localhost:1313/posts/how-to-use-terraform-and-ansible-with-the-ansible-provider/">
+  <meta property="og:site_name" content="Guivin">
+  <meta property="og:title" content="How to Couple Terraform and Ansible With the Ansible Provider">
+  <meta property="og:description" content="Terraform simplifies infrastructure management as code, making deployments declarative and reproducible. However, it falls short for complex configurations—this is where Ansible excels, automating tasks and managing servers efficiently.
+Traditionally, Terraform’s local-exec provisioner ran Ansible playbooks, but it lacked centralized inventory management. The Terraform Ansible provider solves this by integrating Ansible into the Terraform workflow.
+In this article, we’ll use it to deploy an NGINX server on DigitalOcean.
+Pre-requisites Terraform Ansible A DigitalOcean account and a configured token Install the cloud.terraform Ansible collection : ansible-galaxy collection install cloud.terraform Configure the Ansible inventory The cloud.terraform.terraform_provider plugin bridges Terraform and Ansible. It allows Ansible to manage Terraform-provisioned resources. It pulls data from Terraform’s state to generate a dynamic inventory, ensuring consistency between both tools.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2025-03-18T20:03:39+01:00">
+    <meta property="article:modified_time" content="2025-03-18T20:03:39+01:00">
+    <meta property="article:tag" content="Ansible">
+    <meta property="article:tag" content="Terraform">
+
+    
+  <meta itemprop="name" content="How to Couple Terraform and Ansible With the Ansible Provider">
+  <meta itemprop="description" content="Terraform simplifies infrastructure management as code, making deployments declarative and reproducible. However, it falls short for complex configurations—this is where Ansible excels, automating tasks and managing servers efficiently.
+Traditionally, Terraform’s local-exec provisioner ran Ansible playbooks, but it lacked centralized inventory management. The Terraform Ansible provider solves this by integrating Ansible into the Terraform workflow.
+In this article, we’ll use it to deploy an NGINX server on DigitalOcean.
+Pre-requisites Terraform Ansible A DigitalOcean account and a configured token Install the cloud.terraform Ansible collection : ansible-galaxy collection install cloud.terraform Configure the Ansible inventory The cloud.terraform.terraform_provider plugin bridges Terraform and Ansible. It allows Ansible to manage Terraform-provisioned resources. It pulls data from Terraform’s state to generate a dynamic inventory, ensuring consistency between both tools.">
+  <meta itemprop="datePublished" content="2025-03-18T20:03:39+01:00">
+  <meta itemprop="dateModified" content="2025-03-18T20:03:39+01:00">
+  <meta itemprop="wordCount" content="919">
+  <meta itemprop="keywords" content="Ansible,Terraform">
+    
+    <link rel="canonical" href="http://localhost:1313/posts/how-to-use-terraform-and-ansible-with-the-ansible-provider/">
+    <link rel="icon" href="http://localhost:1313//assets/favicon.ico">
+    <link rel="dns-prefetch" href="https://www.google-analytics.com">
+    <link href="https://www.google-analytics.com" rel="preconnect" crossorigin>
+    <link rel="alternate" type="application/atom+xml" title="Guivin" href="http://localhost:1313//atom.xml" />
+    <link rel="alternate" type="application/json" title="Guivin" href="http://localhost:1313//feed.json" />
+    <link rel="shortcut icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Bricolage+Grotesque">
+    
+    
+    <style>*,:after,:before{box-sizing:border-box;padding:0}body{font:1rem/1.5 bricolage grotesque,-apple-system,BlinkMacSystemFont,segoe ui,Helvetica,Arial,sans-serif;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;padding:2rem;background:#fffdfa;color:#000}.skip-link{position:absolute;top:-40px;left:0;background:#eee;z-index:100}.skip-link:focus{top:0}header{line-height:2;padding-bottom:1.5rem}.link{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-decoration:none}.time{font-variant-numeric:tabular-nums;white-space:nowrap}blockquote{border-left:5px solid #eee;padding-left:1rem;margin:0}a,a:visited{color:inherit}a:hover,a.heading-link{text-decoration:none}pre{padding:.5rem;overflow:auto;overflow-x:scroll;overflow-wrap:normal}code,pre{font-family:San Francisco Mono,Monaco,consolas,lucida console,dejavu sans mono,bitstream vera sans mono,monospace;font-size:normal;font-size:small;background:#eee}code{margin:.1rem;border:none;overflow:visible;overflow-wrap:anywhere}ul{list-style-type:square}ul,ol{padding-left:1.2rem}.list{line-height:2;list-style-type:none;padding-left:0}.list li{padding-bottom:.1rem}.meta{color:#777}.content{max-width:70ch;margin:0 auto}header{line-height:2;display:flex;justify-content:space-between;padding-bottom:1rem}header a{text-decoration:none}header ul{list-style-type:none;padding:0}header li,header a{display:inline}h2.post{padding-top:.5rem}header ul a:first-child{padding-left:1rem}.nav{height:1px;background:#000;content:'';max-width:10%}.list li{display:flex;align-items:baseline}.list li time{flex:initial}.hr-list{margin-top:0;margin-bottom:0;margin-right:.5rem;margin-left:.5rem;height:1px;border:0;border-bottom:1px dotted #ccc;flex:1 0 1rem}.m,hr{border:0;margin:3rem 0}img{max-width:100%;height:auto}.post-date{margin:5% 0}.index-date{color:#9a9a9a}.animate-blink{animation:opacity 1s infinite;opacity:1}@keyframes opacity{0%{opacity:1}50%{opacity:.5}100%{opacity:0}}.tags{display:flex;justify-content:space-between}.tags ul{padding:0;margin:0}.tags li{display:inline}.avatar{height:120px;width:120px;position:relative;margin:-10px 0 0 15px;float:right;border-radius:50%}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd;text-align:left;padding:8px}th{background-color:#f2f2f2} </style>
+  
+    
+  
+  
+  <script type="application/ld+json">
+  {
+      "@context": "http://schema.org",
+      "@type": "BlogPosting",
+      "articleSection": "posts",
+      "name": "How to Couple Terraform and Ansible With the Ansible Provider",
+      "headline": "How to Couple Terraform and Ansible With the Ansible Provider",
+      "alternativeHeadline": "",
+      "description": "\u003cp\u003eTerraform simplifies infrastructure management as code, making deployments declarative and reproducible.\nHowever, it falls short for complex configurations—this is where Ansible excels, automating tasks and\nmanaging servers efficiently.\u003c\/p\u003e\n\u003cp\u003eTraditionally, Terraform’s local-exec provisioner ran Ansible playbooks, but it lacked centralized inventory\nmanagement. The Terraform Ansible provider solves this by integrating Ansible into the Terraform workflow.\u003c\/p\u003e\n\u003cp\u003eIn this article, we’ll use it to deploy an NGINX server on DigitalOcean.\u003c\/p\u003e\n\u003ch2 id=\u0022pre-requisites\u0022\u003ePre-requisites\u003c\/h2\u003e\n\u003cul\u003e\n\u003cli\u003e\u003ca href=\u0022https:\/\/developer.hashicorp.com\/terraform\/tutorials\/aws-get-started\/install-cli\u0022\u003eTerraform\u003c\/a\u003e\u003c\/li\u003e\n\u003cli\u003e\u003ca href=\u0022https:\/\/docs.ansible.com\/ansible\/latest\/installation_guide\/intro_installation.html#pipx-install\u0022\u003eAnsible\u003c\/a\u003e\u003c\/li\u003e\n\u003cli\u003eA DigitalOcean account and a configured token\u003c\/li\u003e\n\u003cli\u003eInstall the \u003ccode\u003ecloud.terraform\u003c\/code\u003e Ansible collection :\u003c\/li\u003e\n\u003c\/ul\u003e\n\u003cpre tabindex=\u00220\u0022\u003e\u003ccode\u003eansible-galaxy collection install cloud.terraform\n\u003c\/code\u003e\u003c\/pre\u003e\u003ch2 id=\u0022configure-the-ansible-inventory\u0022\u003eConfigure the Ansible inventory\u003c\/h2\u003e\n\u003cp\u003eThe \u003ccode\u003ecloud.terraform.terraform_provider\u003c\/code\u003e plugin bridges Terraform and Ansible. It allows Ansible to manage\nTerraform-provisioned resources. It pulls data from Terraform’s state to generate a dynamic inventory, ensuring\nconsistency between both tools.\u003c\/p\u003e",
+      "inLanguage": "en-us",
+      "isFamilyFriendly": "true",
+      "mainEntityOfPage": {
+          "@type": "WebPage",
+          "@id": "http:\/\/localhost:1313\/posts\/how-to-use-terraform-and-ansible-with-the-ansible-provider\/"
+      },
+      "author" : {
+          "@type": "Person",
+          "name": ""
+      },
+      "creator" : {
+          "@type": "Person",
+          "name": ""
+      },
+      "accountablePerson" : {
+          "@type": "Person",
+          "name": ""
+      },
+      "copyrightHolder" : "Guivin",
+      "copyrightYear" : "2025",
+      "dateCreated": "2025-03-18T20:03:39.00Z",
+      "datePublished": "2025-03-18T20:03:39.00Z",
+      "dateModified": "2025-03-18T20:03:39.00Z",
+      "publisher":{
+          "@type":"Organization",
+          "name": "Guivin",
+          "url": "http://localhost:1313/",
+          "logo": {
+              "@type": "ImageObject",
+              "url": "http:\/\/localhost:1313\/assets\/favicon.ico",
+              "width":"32",
+              "height":"32"
+          }
+      },
+      "image": "http://localhost:1313/assets/favicon.ico",
+      "url" : "http:\/\/localhost:1313\/posts\/how-to-use-terraform-and-ansible-with-the-ansible-provider\/",
+      "wordCount" : "919",
+      "genre" : [ "Ansible" , "Terraform" ],
+      "keywords" : [ "Ansible" , "Terraform" ]
+  }
+  </script>
+  
+  
+  </head>
+
+<body>
+  <a class="skip-link" href="#main">Skip to main</a>
+  <main id="main">
+  <div class="content">
+    <header>
+<p style="padding: 0;margin: 0;">
+  <a href="http://localhost:1313/">
+    <b>Guivin</b>
+    <span class="text-stone-500 animate-blink">▮</span>
+  </a>
+</p>
+<ul style="padding: 0;margin: 0;">
+  
+  
+  <li class="">
+    <a href="/posts/"><span>Post</span></a>
+    
+  <li class="">
+    <a href="/about/"><span>About</span></a>
+    
+  </li>
+</ul>
+</header>
+<hr class="hr-list" style="padding: 0;margin: 0;">
+    <section>
+      <h2 class="post">How to Couple Terraform and Ansible With the Ansible Provider</h2>
+      <p>Terraform simplifies infrastructure management as code, making deployments declarative and reproducible.
+However, it falls short for complex configurations—this is where Ansible excels, automating tasks and
+managing servers efficiently.</p>
+<p>Traditionally, Terraform’s local-exec provisioner ran Ansible playbooks, but it lacked centralized inventory
+management. The Terraform Ansible provider solves this by integrating Ansible into the Terraform workflow.</p>
+<p>In this article, we’ll use it to deploy an NGINX server on DigitalOcean.</p>
+<h2 id="pre-requisites">Pre-requisites</h2>
+<ul>
+<li><a href="https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli">Terraform</a></li>
+<li><a href="https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#pipx-install">Ansible</a></li>
+<li>A DigitalOcean account and a configured token</li>
+<li>Install the <code>cloud.terraform</code> Ansible collection :</li>
+</ul>
+<pre tabindex="0"><code>ansible-galaxy collection install cloud.terraform
+</code></pre><h2 id="configure-the-ansible-inventory">Configure the Ansible inventory</h2>
+<p>The <code>cloud.terraform.terraform_provider</code> plugin bridges Terraform and Ansible. It allows Ansible to manage
+Terraform-provisioned resources. It pulls data from Terraform’s state to generate a dynamic inventory, ensuring
+consistency between both tools.</p>
+<p>Here’s the content of the inventory.yml file:</p>
+<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#111">---</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">plugin</span><span style="color:#111">:</span> <span style="color:#ae81ff">cloud.terraform.terraform_provider</span>
+</span></span></code></pre></div><h2 id="write-the-terraform-code">Write the Terraform code</h2>
+<p>This Terraform code provisions infrastructure on DigitalOcean and configures it with the Terraform Ansible provider.
+It defines the required providers, uses the DigitalOcean API for resource creation, and integrates Ansible for
+configuration management:</p>
+<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-tf" data-lang="tf"><span style="display:flex;"><span><span style="color:#75af00">terraform</span> <span style="color:#111">{</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75af00">required_providers</span> <span style="color:#111">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75af00">ansible</span> = <span style="color:#111">{</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75af00">source</span>  = <span style="color:#d88200">&#34;ansible/ansible&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75af00">version</span> = <span style="color:#d88200">&#34;1.3.0&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#111">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75af00">digitalocean</span> = <span style="color:#111">{</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75af00">source</span>  = <span style="color:#d88200">&#34;digitalocean/digitalocean&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75af00">version</span> = <span style="color:#d88200">&#34;2.45.0&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#111">}</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#111">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#111">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#00a8c8">
+</span></span></span><span style="display:flex;"><span><span style="color:#00a8c8">variable</span> <span style="color:#d88200">&#34;do_token&#34;</span> <span style="color:#111">{</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75af00">description</span> = <span style="color:#d88200">&#34;Token to authenticate to DigitalOcean&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75af00">type</span>        = <span style="color:#75af00">string</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75af00">sensitive</span>   = <span style="color:#00a8c8">true</span>
+</span></span><span style="display:flex;"><span><span style="color:#111">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#00a8c8">
+</span></span></span><span style="display:flex;"><span><span style="color:#00a8c8">resource</span> <span style="color:#d88200">&#34;digitalocean_ssh_key&#34;</span> <span style="color:#d88200">&#34;default&#34;</span> <span style="color:#111">{</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75af00">name</span>       = <span style="color:#d88200">&#34;Terraform Example&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75af00">public_key</span> = <span style="color:#111">file</span><span style="color:#111">(</span><span style="color:#111">pathexpand</span><span style="color:#111">(</span><span style="color:#d88200">&#34;~/.ssh/id_rsa.pub&#34;</span><span style="color:#111">))</span>
+</span></span><span style="display:flex;"><span><span style="color:#111">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#00a8c8">
+</span></span></span><span style="display:flex;"><span><span style="color:#00a8c8">resource</span> <span style="color:#d88200">&#34;digitalocean_droplet&#34;</span> <span style="color:#d88200">&#34;web1&#34;</span> <span style="color:#111">{</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75af00">name</span>     = <span style="color:#d88200">&#34;web1&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75af00">image</span>    = <span style="color:#d88200">&#34;ubuntu-24-10-x64&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75af00">region</span>   = <span style="color:#d88200">&#34;nyc2&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75af00">size</span>     = <span style="color:#d88200">&#34;s-1vcpu-1gb&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75af00">backups</span>  = <span style="color:#00a8c8">false</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75af00">ssh_keys</span> = <span style="color:#111">[</span><span style="color:#75af00">digitalocean_ssh_key</span><span style="color:#111">.</span><span style="color:#75af00">default</span><span style="color:#111">.</span><span style="color:#75af00">fingerprint</span><span style="color:#111">]</span>
+</span></span><span style="display:flex;"><span><span style="color:#111">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#00a8c8">
+</span></span></span><span style="display:flex;"><span><span style="color:#00a8c8">resource</span> <span style="color:#d88200">&#34;ansible_host&#34;</span> <span style="color:#d88200">&#34;web1&#34;</span> <span style="color:#111">{</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75af00">name</span>   = <span style="color:#75af00">digitalocean_droplet</span><span style="color:#111">.</span><span style="color:#75af00">web1</span><span style="color:#111">.</span><span style="color:#75af00">ipv4_address</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75af00">groups</span> = <span style="color:#111">[</span><span style="color:#d88200">&#34;webservers&#34;</span><span style="color:#111">]</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75af00">variables</span> = <span style="color:#111">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75af00">ansible_user</span>                 = <span style="color:#d88200">&#34;root&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75af00">ansible_ssh_private_key_file</span> = <span style="color:#d88200">&#34;~/.ssh/id_rsa&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75af00">ansible_python_interpreter</span>   = <span style="color:#d88200">&#34;/usr/bin/python3&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75af00">ansible_ssh_common_args</span>      = <span style="color:#d88200">&#34;-o StrictHostKeyChecking=no&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#111">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#111">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#00a8c8">
+</span></span></span><span style="display:flex;"><span><span style="color:#00a8c8">output</span> <span style="color:#d88200">&#34;ipv4_address&#34;</span> <span style="color:#111">{</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75af00">value</span> = <span style="color:#75af00">digitalocean_droplet</span><span style="color:#111">.</span><span style="color:#75af00">web1</span><span style="color:#111">.</span><span style="color:#75af00">ipv4_address</span>
+</span></span><span style="display:flex;"><span><span style="color:#111">}</span>
+</span></span></code></pre></div><p>The required_providers block specifies the necessary providers: ansible (for Ansible integration) and digitalocean
+(for interacting with the DigitalOcean API). The code also includes the versions for both providers to ensure compatibility.</p>
+<p>The variable <code>do_token</code> block defines a sensitive variable for the DigitalOcean API token, which is used for authentication
+to DigitalOcean.</p>
+<p>The <code>digitalocean_ssh_key</code> resource uploads an SSH public key to DigitalOcean, allowing secure SSH access to provisioned machines.</p>
+<p>The <code>ansible_host</code> resource creates an Ansible inventory entry for the provisioned droplet. It assigns the droplet’s
+IP address to the web1 host group and sets necessary Ansible variables, such as the SSH private key path and Python interpreter
+for the Ansible playbooks.</p>
+<p>Finally, the output block outputs the IP address of the provisioned droplet, allowing easy access to the newly created server.</p>
+<p>Apply the Terraform code with your DigitalOcean token :</p>
+<pre tabindex="0"><code>read -s DO_TOKEN
+terraform apply -var &#34;do_token=$DO_TOKEN&#34;
+</code></pre><h2 id="ansible-dynamic-inventory-with-terraform">Ansible dynamic inventory with Terraform</h2>
+<p>The command <code>ansible-inventory -i inventory.yml --graph --vars</code> is used to display a graphical representation
+of your Ansible inventory along with any associated variable values for the hosts.</p>
+<ul>
+<li><code>@all</code> : This represents all the hosts in the inventory.</li>
+<li><code>@ungrouped</code> : This group contains any hosts that are not part of a specific group</li>
+<li><code>@webservers</code> : This group contains all hosts defined under the “webservers” group, in this case, the IP address <code>162.243.103.221</code>.</li>
+</ul>
+<p>Under the <code>@webservers</code> group, the host <code>162.243.103.221</code> has several associated variables:</p>
+<ul>
+<li><code>{ansible_python_interpreter = /usr/bin/python3}</code> : Specifies the path to the Python interpreter on the target machine.</li>
+<li><code>{ansible_ssh_common_args = -o StrictHostKeyChecking=no}</code> : This is an SSH configuration option to bypass the host key check when connecting to the server.</li>
+<li><code>{ansible_ssh_private_key_file = ~/.ssh/id_rsa}</code> : Specifies the path to the SSH private key for authentication.</li>
+<li><code>{ansible_user = root}</code> : Specifies the user to log in when SSHing into the server (in this case, root).</li>
+</ul>
+<p>This output helps you visualize the inventory structure and confirm that the necessary configurations are
+applied to the hosts, which is useful when debugging or reviewing your setup.</p>
+<pre tabindex="0"><code>$ ansible-inventory -i inventory.yml --graph --vars
+@all:
+  |--@ungrouped:
+  |--@webservers:
+  |  |--162.243.103.221
+  |  |  |--{ansible_python_interpreter = /usr/bin/python3}
+  |  |  |--{ansible_ssh_common_args = -o StrictHostKeyChecking=no}
+  |  |  |--{ansible_ssh_private_key_file = ~/.ssh/id_rsa}
+  |  |  |--{ansible_user = root}
+</code></pre><h2 id="apply-the-ansible-playbook-with-terraform">Apply the Ansible playbook with Terraform</h2>
+<p>This command runs the Ansible playbook playbook.yml using the inventory.yml file with Terraform to define the target hosts.
+Ansible first gathers facts about the system, then ensures the NGINX package is installed, and finally makes sure NGINX
+is started and enabled.</p>
+<pre tabindex="0"><code>$ ansible-playbook playbook.yml -i inventory.yml
+
+PLAY [Webservers] *************************************************************************************************
+
+TASK [Gathering Facts] ********************************************************************************************
+ok: [162.243.103.221]
+
+TASK [Ensure NGINX package is present.] ***************************************************************************
+changed: [162.243.103.221]
+
+TASK [Ensure NGINX is started and enabled.] ***********************************************************************
+ok: [162.243.103.221]
+
+PLAY RECAP ********************************************************************************************************
+162.243.103.221            : ok=3    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+</code></pre><pre tabindex="0"><code>$ HOSTNAME=$(terraform output -json | jq -r .ipv4_address.value)
+$ ssh root@$HOSTNAME
+# systemctl status nginx
+● nginx.service - A high performance web server and a reverse proxy server
+     Loaded: loaded (/usr/lib/systemd/system/nginx.service; enabled; preset: enabled)
+     Active: active (running) since Wed 2024-12-04 10:51:51 UTC; 1min 29s ago
+ Invocation: 6c7c64b422404a549fdea09bb90f3520
+       Docs: man:nginx(8)
+    Process: 2438 ExecStartPre=/usr/sbin/nginx -t -q -g daemon on; master_process on; (code=exited, status=0/SUCCE&gt;
+    Process: 2439 ExecStart=/usr/sbin/nginx -g daemon on; master_process on; (code=exited, status=0/SUCCESS)
+   Main PID: 2441 (nginx)
+      Tasks: 2 (limit: 1110)
+     Memory: 2.1M (peak: 2.3M)
+        CPU: 26ms
+     CGroup: /system.slice/nginx.service
+             ├─2441 &#34;nginx: master process /usr/sbin/nginx -g daemon on; master_process on;&#34;
+             └─2442 &#34;nginx: worker process&#34;
+</code></pre><h2 id="conclusion">Conclusion</h2>
+<p>In this article, we’ve shown how to combine Terraform and Ansible to automate both the provisioning and configuration
+of your infrastructure. By using the Terraform Ansible provider, you can avoid the hassle of managing inventories
+manually, making everything more streamlined and consistent.</p>
+<p>With Terraform handling resource creation and Ansible managing configuration, this integration helps you automate
+tasks more efficiently. It simplifies your workflow, ensures consistency, and makes managing infrastructure at
+scale much easier.</p>
+<p>You can retrieve the presented code here: <a href="https://github.com/guivin/terraform-ansible-integration-101">terraform-ansible-integration-101</a></p>
+
+      
+      <div class="post-date">
+        <span class="g time">March 18, 2025 </span> &#8729;
+         
+         <a href="http://localhost:1313/tags/ansible/">ansible</a> <a href="http://localhost:1313/tags/terraform/">terraform</a>
+      </div>
+      
+    </section>
+    
+    
+    
+  </div>
+</main>
+</body>
+</html>

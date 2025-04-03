@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Ansible on Guivin</title>
+    <link>http://localhost:1313/tags/ansible/</link>
+    <description>Recent content in Ansible on Guivin</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 18 Mar 2025 20:03:39 +0100</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/ansible/atom.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>How to Couple Terraform and Ansible With the Ansible Provider</title>
+      <link>http://localhost:1313/posts/how-to-use-terraform-and-ansible-with-the-ansible-provider/</link>
+      <pubDate>Tue, 18 Mar 2025 20:03:39 +0100</pubDate>
+      <guid>http://localhost:1313/posts/how-to-use-terraform-and-ansible-with-the-ansible-provider/</guid>
+      <description>&lt;p&gt;Terraform simplifies infrastructure management as code, making deployments declarative and reproducible.&#xA;However, it falls short for complex configurations—this is where Ansible excels, automating tasks and&#xA;managing servers efficiently.&lt;/p&gt;&#xA;&lt;p&gt;Traditionally, Terraform’s local-exec provisioner ran Ansible playbooks, but it lacked centralized inventory&#xA;management. The Terraform Ansible provider solves this by integrating Ansible into the Terraform workflow.&lt;/p&gt;&#xA;&lt;p&gt;In this article, we’ll use it to deploy an NGINX server on DigitalOcean.&lt;/p&gt;&#xA;&lt;h2 id=&#34;pre-requisites&#34;&gt;Pre-requisites&lt;/h2&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;a href=&#34;https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli&#34;&gt;Terraform&lt;/a&gt;&lt;/li&gt;&#xA;&lt;li&gt;&lt;a href=&#34;https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#pipx-install&#34;&gt;Ansible&lt;/a&gt;&lt;/li&gt;&#xA;&lt;li&gt;A DigitalOcean account and a configured token&lt;/li&gt;&#xA;&lt;li&gt;Install the &lt;code&gt;cloud.terraform&lt;/code&gt; Ansible collection :&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;ansible-galaxy collection install cloud.terraform&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;configure-the-ansible-inventory&#34;&gt;Configure the Ansible inventory&lt;/h2&gt;&#xA;&lt;p&gt;The &lt;code&gt;cloud.terraform.terraform_provider&lt;/code&gt; plugin bridges Terraform and Ansible. It allows Ansible to manage&#xA;Terraform-provisioned resources. It pulls data from Terraform’s state to generate a dynamic inventory, ensuring&#xA;consistency between both tools.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

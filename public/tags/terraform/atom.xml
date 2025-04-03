@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Terraform on Guivin</title>
+    <link>http://localhost:1313/tags/terraform/</link>
+    <description>Recent content in Terraform on Guivin</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 31 Mar 2025 21:44:03 +0200</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/terraform/atom.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>How to Fix Missing Terraform Darwin ARM64 Binary Issues</title>
+      <link>http://localhost:1313/posts/terraform-arm64-macos-workaround/</link>
+      <pubDate>Mon, 31 Mar 2025 21:44:03 +0200</pubDate>
+      <guid>http://localhost:1313/posts/terraform-arm64-macos-workaround/</guid>
+      <description>&lt;p&gt;Sometimes you need to work with an older version of Terraform but there is no existing Darwin ARM64 binary for the version you need. Even if you’re using version managers like &lt;a href=&#34;https://github.com/tfutils/tfenv&#34;&gt;tfenv&lt;/a&gt; or &lt;a href=&#34;https://asdf-vm.com/&#34;&gt;asdf&lt;/a&gt;, you might find that the correct binary architecture is missing for the version you&amp;rsquo;re looking for. This is common for versions created before Mac processor architecture was released.&lt;/p&gt;&#xA;&lt;p&gt;Here a quick workaround solution to fix this situation :&lt;/p&gt;&#xA;&lt;ol&gt;&#xA;&lt;li&gt;Install go :&lt;/li&gt;&#xA;&lt;/ol&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;brew install go&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;ol start=&#34;2&#34;&gt;&#xA;&lt;li&gt;Clone the Terraform repository :&lt;/li&gt;&#xA;&lt;/ol&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;git clone https://github.com/hashicorp/terraform&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;ol start=&#34;3&#34;&gt;&#xA;&lt;li&gt;Checkout the required version of Terraform :&lt;/li&gt;&#xA;&lt;/ol&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;cd terraform&#xA;git checkout tags/v0.12.13&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;ol start=&#34;4&#34;&gt;&#xA;&lt;li&gt;Build an executable file :&lt;/li&gt;&#xA;&lt;/ol&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;go install .&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;ol start=&#34;5&#34;&gt;&#xA;&lt;li&gt;The previous &lt;code&gt;go&lt;/code&gt; command build a binary in your &lt;code&gt;GOBIN&lt;/code&gt; by default. Ensure it is present in your &lt;code&gt;PATH&lt;/code&gt; :&lt;/li&gt;&#xA;&lt;/ol&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;export PATH=&amp;#34;$PATH:$(go env GOBIN)&amp;#34;&#xA;&lt;/code&gt;&lt;/pre&gt;</description>
+    </item>
+  </channel>
+</rss>

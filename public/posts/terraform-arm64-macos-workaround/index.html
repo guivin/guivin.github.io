@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Liste - http://localhost:1313/">
+    <title>How to Fix Missing Terraform Darwin ARM64 Binary Issues | Guivin</title>
+    <meta name="description" content="Personal Blog of a Site Reliabity Engineer">
+    <meta property="og:url" content="http://localhost:1313/posts/terraform-arm64-macos-workaround/">
+  <meta property="og:site_name" content="Guivin">
+  <meta property="og:title" content="How to Fix Missing Terraform Darwin ARM64 Binary Issues">
+  <meta property="og:description" content="Sometimes you need to work with an older version of Terraform but there is no existing Darwin ARM64 binary for the version you need. Even if you’re using version managers like tfenv or asdf, you might find that the correct binary architecture is missing for the version you’re looking for. This is common for versions created before Mac processor architecture was released.
+Here a quick workaround solution to fix this situation :
+Install go : brew install go Clone the Terraform repository : git clone https://github.com/hashicorp/terraform Checkout the required version of Terraform : cd terraform git checkout tags/v0.12.13 Build an executable file : go install . The previous go command build a binary in your GOBIN by default. Ensure it is present in your PATH : export PATH=&#34;$PATH:$(go env GOBIN)&#34;">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2025-03-31T21:44:03+02:00">
+    <meta property="article:modified_time" content="2025-03-31T21:44:03+02:00">
+    <meta property="article:tag" content="Terraform">
+    <meta property="article:tag" content="Macos">
+
+    
+  <meta itemprop="name" content="How to Fix Missing Terraform Darwin ARM64 Binary Issues">
+  <meta itemprop="description" content="Sometimes you need to work with an older version of Terraform but there is no existing Darwin ARM64 binary for the version you need. Even if you’re using version managers like tfenv or asdf, you might find that the correct binary architecture is missing for the version you’re looking for. This is common for versions created before Mac processor architecture was released.
+Here a quick workaround solution to fix this situation :
+Install go : brew install go Clone the Terraform repository : git clone https://github.com/hashicorp/terraform Checkout the required version of Terraform : cd terraform git checkout tags/v0.12.13 Build an executable file : go install . The previous go command build a binary in your GOBIN by default. Ensure it is present in your PATH : export PATH=&#34;$PATH:$(go env GOBIN)&#34;">
+  <meta itemprop="datePublished" content="2025-03-31T21:44:03+02:00">
+  <meta itemprop="dateModified" content="2025-03-31T21:44:03+02:00">
+  <meta itemprop="wordCount" content="130">
+  <meta itemprop="keywords" content="Terraform,Macos">
+    
+    <link rel="canonical" href="http://localhost:1313/posts/terraform-arm64-macos-workaround/">
+    <link rel="icon" href="http://localhost:1313//assets/favicon.ico">
+    <link rel="dns-prefetch" href="https://www.google-analytics.com">
+    <link href="https://www.google-analytics.com" rel="preconnect" crossorigin>
+    <link rel="alternate" type="application/atom+xml" title="Guivin" href="http://localhost:1313//atom.xml" />
+    <link rel="alternate" type="application/json" title="Guivin" href="http://localhost:1313//feed.json" />
+    <link rel="shortcut icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Bricolage+Grotesque">
+    
+    
+    <style>*,:after,:before{box-sizing:border-box;padding:0}body{font:1rem/1.5 bricolage grotesque,-apple-system,BlinkMacSystemFont,segoe ui,Helvetica,Arial,sans-serif;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;padding:2rem;background:#fffdfa;color:#000}.skip-link{position:absolute;top:-40px;left:0;background:#eee;z-index:100}.skip-link:focus{top:0}header{line-height:2;padding-bottom:1.5rem}.link{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-decoration:none}.time{font-variant-numeric:tabular-nums;white-space:nowrap}blockquote{border-left:5px solid #eee;padding-left:1rem;margin:0}a,a:visited{color:inherit}a:hover,a.heading-link{text-decoration:none}pre{padding:.5rem;overflow:auto;overflow-x:scroll;overflow-wrap:normal}code,pre{font-family:San Francisco Mono,Monaco,consolas,lucida console,dejavu sans mono,bitstream vera sans mono,monospace;font-size:normal;font-size:small;background:#eee}code{margin:.1rem;border:none;overflow:visible;overflow-wrap:anywhere}ul{list-style-type:square}ul,ol{padding-left:1.2rem}.list{line-height:2;list-style-type:none;padding-left:0}.list li{padding-bottom:.1rem}.meta{color:#777}.content{max-width:70ch;margin:0 auto}header{line-height:2;display:flex;justify-content:space-between;padding-bottom:1rem}header a{text-decoration:none}header ul{list-style-type:none;padding:0}header li,header a{display:inline}h2.post{padding-top:.5rem}header ul a:first-child{padding-left:1rem}.nav{height:1px;background:#000;content:'';max-width:10%}.list li{display:flex;align-items:baseline}.list li time{flex:initial}.hr-list{margin-top:0;margin-bottom:0;margin-right:.5rem;margin-left:.5rem;height:1px;border:0;border-bottom:1px dotted #ccc;flex:1 0 1rem}.m,hr{border:0;margin:3rem 0}img{max-width:100%;height:auto}.post-date{margin:5% 0}.index-date{color:#9a9a9a}.animate-blink{animation:opacity 1s infinite;opacity:1}@keyframes opacity{0%{opacity:1}50%{opacity:.5}100%{opacity:0}}.tags{display:flex;justify-content:space-between}.tags ul{padding:0;margin:0}.tags li{display:inline}.avatar{height:120px;width:120px;position:relative;margin:-10px 0 0 15px;float:right;border-radius:50%}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd;text-align:left;padding:8px}th{background-color:#f2f2f2} </style>
+  
+    
+  
+  
+  <script type="application/ld+json">
+  {
+      "@context": "http://schema.org",
+      "@type": "BlogPosting",
+      "articleSection": "posts",
+      "name": "How to Fix Missing Terraform Darwin ARM64 Binary Issues",
+      "headline": "How to Fix Missing Terraform Darwin ARM64 Binary Issues",
+      "alternativeHeadline": "",
+      "description": "\u003cp\u003eSometimes you need to work with an older version of Terraform but there is no existing Darwin ARM64 binary for the version you need. Even if you’re using version managers like \u003ca href=\u0022https:\/\/github.com\/tfutils\/tfenv\u0022\u003etfenv\u003c\/a\u003e or \u003ca href=\u0022https:\/\/asdf-vm.com\/\u0022\u003easdf\u003c\/a\u003e, you might find that the correct binary architecture is missing for the version you\u0026rsquo;re looking for. This is common for versions created before Mac processor architecture was released.\u003c\/p\u003e\n\u003cp\u003eHere a quick workaround solution to fix this situation :\u003c\/p\u003e\n\u003col\u003e\n\u003cli\u003eInstall go :\u003c\/li\u003e\n\u003c\/ol\u003e\n\u003cpre tabindex=\u00220\u0022\u003e\u003ccode\u003ebrew install go\n\u003c\/code\u003e\u003c\/pre\u003e\u003col start=\u00222\u0022\u003e\n\u003cli\u003eClone the Terraform repository :\u003c\/li\u003e\n\u003c\/ol\u003e\n\u003cpre tabindex=\u00220\u0022\u003e\u003ccode\u003egit clone https:\/\/github.com\/hashicorp\/terraform\n\u003c\/code\u003e\u003c\/pre\u003e\u003col start=\u00223\u0022\u003e\n\u003cli\u003eCheckout the required version of Terraform :\u003c\/li\u003e\n\u003c\/ol\u003e\n\u003cpre tabindex=\u00220\u0022\u003e\u003ccode\u003ecd terraform\ngit checkout tags\/v0.12.13\n\u003c\/code\u003e\u003c\/pre\u003e\u003col start=\u00224\u0022\u003e\n\u003cli\u003eBuild an executable file :\u003c\/li\u003e\n\u003c\/ol\u003e\n\u003cpre tabindex=\u00220\u0022\u003e\u003ccode\u003ego install .\n\u003c\/code\u003e\u003c\/pre\u003e\u003col start=\u00225\u0022\u003e\n\u003cli\u003eThe previous \u003ccode\u003ego\u003c\/code\u003e command build a binary in your \u003ccode\u003eGOBIN\u003c\/code\u003e by default. Ensure it is present in your \u003ccode\u003ePATH\u003c\/code\u003e :\u003c\/li\u003e\n\u003c\/ol\u003e\n\u003cpre tabindex=\u00220\u0022\u003e\u003ccode\u003eexport PATH=\u0026#34;$PATH:$(go env GOBIN)\u0026#34;\n\u003c\/code\u003e\u003c\/pre\u003e",
+      "inLanguage": "en-us",
+      "isFamilyFriendly": "true",
+      "mainEntityOfPage": {
+          "@type": "WebPage",
+          "@id": "http:\/\/localhost:1313\/posts\/terraform-arm64-macos-workaround\/"
+      },
+      "author" : {
+          "@type": "Person",
+          "name": ""
+      },
+      "creator" : {
+          "@type": "Person",
+          "name": ""
+      },
+      "accountablePerson" : {
+          "@type": "Person",
+          "name": ""
+      },
+      "copyrightHolder" : "Guivin",
+      "copyrightYear" : "2025",
+      "dateCreated": "2025-03-31T21:44:03.00Z",
+      "datePublished": "2025-03-31T21:44:03.00Z",
+      "dateModified": "2025-03-31T21:44:03.00Z",
+      "publisher":{
+          "@type":"Organization",
+          "name": "Guivin",
+          "url": "http://localhost:1313/",
+          "logo": {
+              "@type": "ImageObject",
+              "url": "http:\/\/localhost:1313\/assets\/favicon.ico",
+              "width":"32",
+              "height":"32"
+          }
+      },
+      "image": "http://localhost:1313/assets/favicon.ico",
+      "url" : "http:\/\/localhost:1313\/posts\/terraform-arm64-macos-workaround\/",
+      "wordCount" : "130",
+      "genre" : [ "Terraform" , "macos" ],
+      "keywords" : [ "Terraform" , "macos" ]
+  }
+  </script>
+  
+  
+  </head>
+
+<body>
+  <a class="skip-link" href="#main">Skip to main</a>
+  <main id="main">
+  <div class="content">
+    <header>
+<p style="padding: 0;margin: 0;">
+  <a href="http://localhost:1313/">
+    <b>Guivin</b>
+    <span class="text-stone-500 animate-blink">▮</span>
+  </a>
+</p>
+<ul style="padding: 0;margin: 0;">
+  
+  
+  <li class="">
+    <a href="/posts/"><span>Post</span></a>
+    
+  <li class="">
+    <a href="/about/"><span>About</span></a>
+    
+  </li>
+</ul>
+</header>
+<hr class="hr-list" style="padding: 0;margin: 0;">
+    <section>
+      <h2 class="post">How to Fix Missing Terraform Darwin ARM64 Binary Issues</h2>
+      <p>Sometimes you need to work with an older version of Terraform but there is no existing Darwin ARM64 binary for the version you need. Even if you’re using version managers like <a href="https://github.com/tfutils/tfenv">tfenv</a> or <a href="https://asdf-vm.com/">asdf</a>, you might find that the correct binary architecture is missing for the version you&rsquo;re looking for. This is common for versions created before Mac processor architecture was released.</p>
+<p>Here a quick workaround solution to fix this situation :</p>
+<ol>
+<li>Install go :</li>
+</ol>
+<pre tabindex="0"><code>brew install go
+</code></pre><ol start="2">
+<li>Clone the Terraform repository :</li>
+</ol>
+<pre tabindex="0"><code>git clone https://github.com/hashicorp/terraform
+</code></pre><ol start="3">
+<li>Checkout the required version of Terraform :</li>
+</ol>
+<pre tabindex="0"><code>cd terraform
+git checkout tags/v0.12.13
+</code></pre><ol start="4">
+<li>Build an executable file :</li>
+</ol>
+<pre tabindex="0"><code>go install .
+</code></pre><ol start="5">
+<li>The previous <code>go</code> command build a binary in your <code>GOBIN</code> by default. Ensure it is present in your <code>PATH</code> :</li>
+</ol>
+<pre tabindex="0"><code>export PATH=&#34;$PATH:$(go env GOBIN)&#34;
+</code></pre>
+      
+      <div class="post-date">
+        <span class="g time">March 31, 2025 </span> &#8729;
+         
+         <a href="http://localhost:1313/tags/terraform/">terraform</a> <a href="http://localhost:1313/tags/macos/">macos</a>
+      </div>
+      
+    </section>
+    
+    
+    
+  </div>
+</main>
+</body>
+</html>
