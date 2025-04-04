@@ -9,7 +9,7 @@ theme = 'maverick'
 [params]
   logo = '/assets/favicon.ico'
   description = "Personal Blog of a Site Reliabity Engineer"
-  author = 'Calvin Tran'
+  author = 'Guillaume Vincent'
   items = 10
 
   [params.comments]
