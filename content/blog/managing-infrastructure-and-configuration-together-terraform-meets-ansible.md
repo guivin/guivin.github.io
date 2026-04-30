@@ -1,8 +1,11 @@
-+++
-title = "Managing Infrastructure and Configuration Together: Terraform Meets Ansible"
-date = 2025-05-21T19:13:00+02:00
-tags = ['terraform', 'ansible', 'iac']
-+++
+---
+title: "Managing Infrastructure and Configuration Together: Terraform Meets Ansible"
+date: 2025-05-21T19:13:00+02:00
+tags:
+  - terraform
+  - ansible
+  - iac
+---
 
 Terraform is great for provisioning infrastructure. Ansible is great for configuring it. Together, they cover the full automation spectrum — but traditional integrations using `local-exec` can get messy and hard to scale.
 
