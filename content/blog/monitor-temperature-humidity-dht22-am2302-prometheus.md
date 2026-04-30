@@ -1,8 +1,11 @@
-+++
-title = "DIY: Monitor Temperature and Humidity with DHT22/AM2302 and Prometheus"
-date = 2021-02-25T10:47:13+02:00
-tags = ['raspberry', 'observability', 'prometheus']
-+++
+---
+title: "DIY: Monitor Temperature and Humidity with DHT22/AM2302 and Prometheus"
+date: 2021-02-25T10:47:13+02:00
+tags:
+  - raspberry
+  - observability
+  - prometheus
+---
 
 Monitoring environmental conditions is a great way to combine IoT with cloud-native observability tools. In this article,
 we’ll build a simple and reliable setup to monitor temperature and humidity using a Raspberry Pi and a DHT22 (AM2302)

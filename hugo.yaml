@@ -1,0 +1,98 @@
+baseURL: https://guivin.github.io
+languageCode: en-us
+title: Guivin
+
+module:
+  imports:
+    - path: github.com/imfing/hextra
+
+enableGitInfo: true
+
+permalinks:
+  pages: /:slug
+
+params:
+  description: "Personal Blog of a Site Reliability Engineer"
+  author:
+    name: Guillaume Vincent
+  displayUpdatedDate: true
+  dateFormat: "January 2, 2006"
+
+  navbar:
+    displayTitle: true
+    displayLogo: false
+    width: normal
+
+  theme:
+    default: system
+    displayToggle: true
+
+  search:
+    enable: true
+    type: flexsearch
+    flexsearch:
+      index: content
+      tokenize: forward
+
+  editURL:
+    enable: true
+    base: https://github.com/guivin/guivin.github.io/edit/main
+
+  highlight:
+    copy:
+      display: hover
+
+  page:
+    width: normal
+
+  imageZoom:
+    enable: true
+
+  externalLinkDecoration: true
+
+  blog:
+    list:
+      displayTags: true
+
+menu:
+  main:
+    - name: Blog
+      pageRef: /blog
+      weight: 1
+    - name: About
+      pageRef: /about
+      weight: 2
+    - name: Search
+      weight: 3
+      params:
+        type: search
+    - name: GitHub
+      weight: 4
+      url: https://github.com/guivin
+      params:
+        icon: github
+
+markup:
+  goldmark:
+    renderer:
+      unsafe: true
+  highlight:
+    noClasses: false
+
+taxonomies:
+  tag: tags
+
+outputs:
+  home:
+    - HTML
+    - RSS
+  section:
+    - HTML
+    - RSS
+
+sitemap:
+  changefreq: weekly
+  priority: 0.5
+
+ignoreErrors:
+  - error-remote-getjson
