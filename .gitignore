@@ -19,3 +19,5 @@ hugo.linux
 # Local test directory
 /test/
 
+# Vendor
+/vendor/
