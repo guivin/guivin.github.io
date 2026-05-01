@@ -7,14 +7,11 @@ toc: false
 
 Construire des plateformes qui permettent de livrer en fiabilité, sans freiner la vitesse. Ce blog explore cette démarche en pratique : architecture, infrastructure as code, observabilité, scalabilité.
 
-<style>
-  .cover-dark { display: none; }
-  html.dark .cover-light { display: none; }
-  html.dark .cover-dark { display: block; }
-</style>
 <div style="text-align: center; margin: 2rem 0;">
-  <img src="/images/cover-image-light.png" class="cover-light" alt="Cover" style="max-width: 100%; border-radius: 8px;">
-  <img src="/images/cover-image-dark.png" class="cover-dark" alt="Cover" style="max-width: 100%; border-radius: 8px;">
+  <picture>
+    <source srcset="/images/cover-image-dark.png" media="(prefers-color-scheme: dark)">
+    <img src="/images/cover-image-light.png" alt="Cover" style="max-width: 100%; border-radius: 8px;">
+  </picture>
 </div>
 
 {{< cards >}}

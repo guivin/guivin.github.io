@@ -10,6 +10,6 @@
 
 ## Articles
 {{ range where .Site.RegularPages "Section" "blog" }}
-- [{{ .Title }}]({{ .Permalink }}){{ with .Params.tags }} — {{ delimit . ", " }}{{ end }}{{ with .Summary }}
+- [{{ .Title }}]({{ .Permalink }}){{ with .Params.tags }} — {{ delimit . ", " }}{{ end }}{{ with (.Summary | default .Description) }}
   {{ . | plainify | truncate 120 }}{{ end }}
 {{ end -}}
