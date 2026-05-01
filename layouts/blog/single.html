@@ -13,7 +13,7 @@
         {{ end }}
         <div class="hx:mt-4 hx:mb-16 hx:text-gray-500 hx:dark:text-gray-400 hx:text-sm hx:flex hx:items-center hx:flex-wrap hx:gap-y-2">
           {{- with $date := .Date }}<span class="hx:mr-1">{{ partial "utils/format-date" $date }}</span>{{ end -}}
-          {{- if .ReadingTime -}}<span class="hx:mx-1">·</span><span class="hx:mr-1">{{ .ReadingTime }} min read</span>{{- end -}}
+          {{- if .ReadingTime -}}<span class="hx:mx-1">·</span><span class="hx:mr-1">{{ .ReadingTime }} min de lecture</span>{{- end -}}
           {{- $lazyLoading := site.Params.enableImageLazyLoading | default true -}}
           {{ if and .Date .Params.authors }}<span class="hx:mx-1">·</span>{{ end -}}
           {{- with $.Params.authors -}}

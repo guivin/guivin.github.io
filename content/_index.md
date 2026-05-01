@@ -3,13 +3,21 @@ title: Guivin
 toc: false
 ---
 
-## Hi there!
+<div style="margin-top: 1.5rem;"></div>
 
-I'm Guillaume Vincent — a Site Reliability Engineer who loves automation, resilience, and solving tricky infrastructure problems. From scaling systems to handling incidents, I'm always learning and sharing what works (and what doesn't).
+Construire des plateformes qui permettent de livrer en fiabilité, sans freiner la vitesse. Ce blog explore cette démarche en pratique : architecture, infrastructure as code, observabilité, scalabilité.
 
-This blog is where I share my thoughts, experiments, and lessons from the world of SRE and DevOps. If you're into automation, reliability, and cloud engineering, you're in the right place.
+<style>
+  .cover-dark { display: none; }
+  html.dark .cover-light { display: none; }
+  html.dark .cover-dark { display: block; }
+</style>
+<div style="text-align: center; margin: 2rem 0;">
+  <img src="/images/cover-image-light.png" class="cover-light" alt="Cover" style="max-width: 100%; border-radius: 8px;">
+  <img src="/images/cover-image-dark.png" class="cover-dark" alt="Cover" style="max-width: 100%; border-radius: 8px;">
+</div>
 
 {{< cards >}}
-  {{< card link="/blog" title="Blog" icon="pencil" subtitle="Articles on SRE, DevOps, and infrastructure" >}}
-  {{< card link="/about" title="About" icon="user" subtitle="Learn more about me" >}}
+  {{< card link="/blog" title="Blog" icon="pencil" subtitle="Ce que j'apprends en construisant des plateformes" >}}
+  {{< card link="/about" title="Bio" icon="user" subtitle="Parcours et expériences" >}}
 {{< /cards >}}

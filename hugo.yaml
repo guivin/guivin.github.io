@@ -1,5 +1,5 @@
 baseURL: https://guivin.github.io
-languageCode: en-us
+languageCode: fr
 title: Guivin
 
 module:
@@ -12,11 +12,11 @@ permalinks:
   pages: /:slug
 
 params:
-  description: "Personal Blog of a Site Reliability Engineer"
+  description: "Construire des plateformes internes qui permettent aux équipes de livrer vite et en fiabilité. Architecture, IaC, observabilité, scalabilité — retours terrain."
   author:
     name: Guillaume Vincent
   displayUpdatedDate: true
-  dateFormat: "January 2, 2006"
+  dateFormat: "2 January 2006"
 
   navbar:
     displayTitle: true
@@ -59,7 +59,7 @@ menu:
     - name: Blog
       pageRef: /blog
       weight: 1
-    - name: About
+    - name: Bio
       pageRef: /about
       weight: 2
     - name: Search
@@ -82,10 +82,24 @@ markup:
 taxonomies:
   tag: tags
 
+outputFormats:
+  llmstxt:
+    mediaType: text/plain
+    baseName: llms
+    isPlainText: true
+    notAlternative: true
+  llmsfulltxt:
+    mediaType: text/plain
+    baseName: llms-full
+    isPlainText: true
+    notAlternative: true
+
 outputs:
   home:
     - HTML
     - RSS
+    - llmstxt
+    - llmsfulltxt
   section:
     - HTML
     - RSS

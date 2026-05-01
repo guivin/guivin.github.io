@@ -1,0 +1,18 @@
+# {{ .Site.Title }}
+
+> {{ .Site.Params.description }}
+
+{{ .Site.BaseURL }}
+
+Auteur : {{ .Site.Params.author.name }}
+{{ range where .Site.RegularPages "Section" "blog" }}
+---
+
+# {{ .Title }}
+
+URL: {{ .Permalink }}
+Date: {{ .Date.Format "2006-01-02" }}{{ with .Params.tags }}
+Tags: {{ delimit . ", " }}{{ end }}
+
+{{ .Content | plainify | htmlUnescape }}
+{{ end -}}
