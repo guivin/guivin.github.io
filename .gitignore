@@ -20,4 +20,4 @@ hugo.linux
 /test/
 
 # Vendor
-/vendor/
+_vendor/
