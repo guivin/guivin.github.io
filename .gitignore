@@ -13,3 +13,11 @@ hugo.linux
 # Temporary lock file while building
 /.hugo_build.lock
 
+# Claude Code
+.claude/
+
+# Local test directory
+/test/
+
+# Vendor
+/vendor/

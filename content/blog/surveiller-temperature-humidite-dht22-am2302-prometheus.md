@@ -1,5 +1,5 @@
 ---
-title: "DIY: Monitor Temperature and Humidity with DHT22/AM2302 and Prometheus"
+title: "DIY : Surveiller la température et l'humidité avec DHT22/AM2302 et Prometheus"
 date: 2021-02-25T10:47:13+02:00
 tags:
   - raspberry
@@ -7,54 +7,49 @@ tags:
   - prometheus
 ---
 
-Monitoring environmental conditions is a great way to combine IoT with cloud-native observability tools. In this article,
-we’ll build a simple and reliable setup to monitor temperature and humidity using a Raspberry Pi and a DHT22 (AM2302)
-sensor.
+Surveiller les conditions environnementales permet de combiner l'IoT avec les outils d'observabilité cloud-native. Dans cet article, nous construisons une configuration pour surveiller la température et l'humidité à l'aide d'un Raspberry Pi et d'un capteur DHT22 (AM2302).
 
-We'll walk through:
-- how to connect the sensor to the Raspberry Pi
-- how to collect sensor data
-- and how to expose these readings using a custom Prometheus exporter written in Go
+Au programme :
+- câblage du capteur sur le Raspberry Pi
+- collecte des données du capteur
+- exposition des mesures via un exporter Prometheus personnalisé écrit en Go
+- visualisation dans Grafana
 
-Finally, we'll visualize the metrics in Grafana with a clean and customizable dashboard. A great DIY project for learning
-Prometheus exporters, time-series databases, and integrating real-world sensors into your monitoring stack.
+## Présentation du capteur : AM2302 (DHT22)
 
-## Meet the Sensor: AM2302 (DHT22)
+![Photo du capteur AM2302](/monitor-temperature-humidity-dht22-am2302-prometheus/am2302-sensor.webp)
 
-![Picture of the AM2302 sensor](/monitor-temperature-humidity-dht22-am2302-prometheus/am2302-sensor.webp)
+L'AM2302 est une version filaire du DHT22. Peu coûteux et simple à intégrer avec les GPIO du Raspberry Pi.
 
-The AM2302 is a wired version of the popular DHT22 sensor. It’s low-cost, easy to use, and perfect for hobbyist.
-monitoring setups.
+### Caractéristiques principales :
 
-### Key specs:
+* Tension : 3V à 5V (logique et alimentation)
+* Consommation : max 2,5 mA lors des mesures
+* Plage d'humidité : 0–100% HR (±2–5%)
+* Plage de température : -40°C à +80°C (±0,5°C)
+* Fréquence d'échantillonnage : max une lecture toutes les 2 secondes (0,5 Hz)
+* Dimensions : 15,1 mm × 25 mm × 7,7 mm
+* Interface : header 4 broches (espacement 0,1")
 
-* Voltage: 3V to 5V (logic and power)
-* Current draw: Max 2.5 mA during measurement
-* Humidity range: 0–100% RH (±2–5%)
-* Temperature range: -40°C to +80°C (±0.5°C)
-* Sampling rate: Max one reading every 2 seconds (0.5 Hz)
-* Dimensions: 15.1 mm × 25 mm × 7.7 mm
-* Interface: 4-pin header (0.1" spacing)
+Il est suffisamment précis pour une utilisation en intérieur et facile à intégrer avec les GPIO d'un Raspberry Pi.
 
-It’s accurate enough for indoor use and easy to integrate with a Raspberry Pi GPIO.
+### Câblage du capteur sur le Pi
 
-### Wiring the Sensor to the Pi
+Le câblage de l'AM2302 est simple :
 
-Wiring the AM2302 is straightforward:
-
-| Sensor Pin | Function    | Raspberry Pi Pin    |
-|------------|-------------|---------------------|
-| 1          | VCC (Power) | 3.3V (Pin 1)        |
-| 2          | Data        | GPIO 4 (Pin 7)      |
-| 3          | Not used    | -                   |
-| 4          | GND         | Ground (Pin 6)      |
+| Broche capteur | Fonction       | Broche Raspberry Pi |
+|----------------|----------------|---------------------|
+| 1              | VCC (Alim.)    | 3,3V (Pin 1)        |
+| 2              | Data           | GPIO 4 (Pin 7)      |
+| 3              | Non utilisée   | -                   |
+| 4              | GND            | Ground (Pin 6)      |
 
 
-### Testing the Sensor
+### Tester le capteur
 
-Before writing a Prometheus exporter, test the sensor with a basic Python script.
+Avant d'écrire un exporter Prometheus, testez le capteur avec un script Python basique.
 
-Install dependencies :
+Installer les dépendances :
 
 ```
 $ sudo apt-get update
@@ -63,7 +58,7 @@ $ python3 -m pip install --upgrade pip
 $ python3 -m pip install Adafruit-DHT
 ```
 
-Here the testing script :
+Le script de test :
 
 ```python
 import Adafruit_DHT
@@ -75,7 +70,7 @@ humidity, temperature = Adafruit_DHT.read_retry(sensor, pin)
 print(f'Temp: {temperature:.1f}°C, Humidity: {humidity:.1f}%')
 ```
 
-Make the script executable and launch it :
+Rendre le script exécutable et le lancer :
 
 ```
 $ chmod +x am2302_tester.py
@@ -83,19 +78,18 @@ $ python3 am2302_tester.py
 Temp=19.2*C  Humidity=55.0%
 ```
 
-Alright, everything is working correctly. We can now go ahead with the coding of the prometheus exporter !
+Tout fonctionne correctement. On peut maintenant passer au développement de l'exporter Prometheus.
 
-## Writing a Prometheus Exporter in Go
+## Écriture d'un exporter Prometheus en Go
 
 ### Configuration
 
-The configuration is a YAML file and has different location following the priority:
+La configuration est un fichier YAML dont l'emplacement suit cet ordre de priorité :
 1. `/etc/dht-prometheus-exporter.yml`
 2. `$HOME/dht-prometheus-exporter.yml`
 3. `$PWD/dht-prometheus-exporter.yml`
 
-The viper package manages the configuration file and stores values into a struct. The recurrent information is
-accessible to other parts of the project.
+Le package viper gère le fichier de configuration et stocke les valeurs dans une struct. Les informations récurrentes sont ainsi accessibles aux autres parties du projet.
 
 ```go
 package main
@@ -146,7 +140,7 @@ func ReadConfig() *Config {
 
 ### Logging
 
-The logrus package manages the logging and reuses the level defined in the configuration :
+Le package logrus gère les logs et réutilise le niveau défini dans la configuration :
 
 ```go
 package main
@@ -209,11 +203,11 @@ func getLogger(config *Config) log.Logger {
 }
 ```
 
-### Sensor
+### Capteur
 
-The go-dht package interface with the sensor. It has already a function to read data from the gpio pin.
+Le package go-dht fait l'interface avec le capteur. Il fournit déjà une fonction pour lire les données depuis la broche GPIO.
 
-A struct contains the collected metrics :
+Une struct contient les métriques collectées :
 
 ```go
 package main
@@ -279,17 +273,15 @@ func (s *Sensor) readRetry() (humidity float64, temperature float64, err error) 
 }
 ```
 
-### Prometheus collector
+### Collector Prometheus
 
-The Prometheus package provides the collector. It lists the different metrics to collect and expose them. The humidity
-and temperature metrics are in the same collector. Metrics have labels to give more context :
+Le package Prometheus fournit le collector. Il liste les différentes métriques à collecter et les expose. Les métriques d'humidité et de température sont dans le même collector. Les métriques ont des labels pour donner plus de contexte :
 
-* dht_name: name of the sensor to be easily identified (in case of multiple sensors)
-* hostname
-* unit: the temperature unit in Fahrenheit or Celsius
+* `dht_name` : nom du capteur pour l'identifier facilement (en cas de capteurs multiples)
+* `hostname`
+* `unit` : l'unité de température en Fahrenheit ou Celsius
 
-Describe and Collector functions are already implemented in the Prometheus package. We need to redefine them to overload
-the functions with our metrics:
+Les fonctions Describe et Collect sont déjà implémentées dans le package Prometheus. Nous devons les redéfinir pour les surcharger avec nos métriques :
 
 ```go
 package main
@@ -338,13 +330,11 @@ func (c *Collector) Collect(ch chan<- prometheus.Metric) {
 }
 ```
 
-### Main file
+### Fichier principal
 
-The main file makes the glue between the previous file’s functions. It created the client charged of reading data from
-the gpio pin. Then it instantiates the collector with this client and registered it.
+Le fichier principal assemble les fonctions des fichiers précédents. Il crée le client chargé de lire les données depuis la broche GPIO, instancie le collector avec ce client et l'enregistre.
 
-Finally, it configures the `promhttp` server with the logging and starts it. The metrics are accessible on the `/metrics`
-path:
+Il configure ensuite le serveur `promhttp` avec le logging et le démarre. Les métriques sont accessibles sur le chemin `/metrics` :
 
 ```go
 package main
@@ -379,7 +369,7 @@ func main() {
 }
 ```
 
-Once started the binary shows the collected metrics on request :
+Une fois démarré, le binaire expose les métriques collectées sur requête :
 
 ```
 $ pi@raspberrypi:~/go/src/github.com/guivin/dht-prometheus-exporter $ ./dht-exporter
@@ -388,7 +378,7 @@ time="2021-02-17T20:19:20Z" level=info msg="Starting http server on TCP/8080 por
 time="2021-02-17T20:19:36Z" level=info msg="Retrieved humidity=62.70%, temperature=68.90°F from the sensor"
 ```
 
-The request is done on the TCP/8080 port :
+La requête se fait sur le port TCP/8080 :
 
 ```
 # HELP dht_humidity_percent Humidity percent measured by the sensor
@@ -510,15 +500,15 @@ process_virtual_memory_bytes 8.93046784e+08
 process_virtual_memory_max_bytes 1.8446744073709552e+19
 ```
 
-## Deploy the Prometheus Exporter on the Raspberry
+## Déployer l'exporter Prometheus sur le Raspberry
 
-Install `golang` and `make to build the source code:
+Installer `golang` et `make` pour compiler le code source :
 
 ```
 sudo apt install golang make
 ```
 
-Defines your environment variables for Golang:
+Définir les variables d'environnement pour Golang :
 
 ```
 export GOPATH=$HOME/go
@@ -526,13 +516,13 @@ export GOBIN=$GOPATH/bin
 export PATH=$PATH:$GOBIN
 ```
 
-Download dep package:
+Télécharger le package dep :
 
 ```
 go get -u github.com/golang/dep/cmd/dep
 ```
 
-Clone the git repository and build the sources:
+Cloner le dépôt git et compiler les sources :
 
 ```
 go get -u github.com/guivin/dht-prometheus-exporter.git
@@ -541,13 +531,13 @@ git checkout tags/v0.1
 make all
 ```
 
-Install the systemd service unit:
+Installer le service systemd :
 
 ```
 sudo cp dht-prometheus-exporter.service /etc/systemd/system
 ```
 
-Deploy the configuration file:
+Déployer le fichier de configuration :
 
 ```
 sudo cp dht-prometheus-exporter.yml /etc
@@ -555,21 +545,20 @@ sudo chown dht-prometheus-exporter:dht-prometheus-exporter /etc/dht-prometheus-e
 sudo chmod 0640 /etc/dht-prometheus-exporter.yml
 ```
 
-Create a dht-prometheus-exporter system user and group for the exporter. This system user belongs also to the gpio as a
-secondary group to read gpio pins:
+Créer un utilisateur et groupe système `dht-prometheus-exporter` pour l'exporter. Cet utilisateur appartient aussi au groupe `gpio` en tant que groupe secondaire pour lire les broches GPIO :
 
 ```
 sudo useradd --user-group --groups gpio --no-create-home --system --shell /usr/sbin/nologin dht-prometheus-exporter
 ```
 
-Start the systemd unit:
+Démarrer le service systemd :
 
 ```
 sudo systemctl daemon-reload
 sudo systemctl start dht-prometheus-exporter
 ```
 
-Check the logs of the systemd unit:
+Vérifier les logs du service systemd :
 
 ```
 $ sudo journalctl -u dht-prometheus-exporter -f
@@ -577,15 +566,15 @@ Feb 18 07:14:25 raspberrypi dht-prometheus-exporter[4031]: time="2021-02-18T07:1
 Feb 18 07:14:25 raspberrypi dht-prometheus-exporter[4031]: time="2021-02-18T07:14:25Z" level=info msg="Starting http server on TCP/8080 port"
 ```
 
-## Register the Exporter in Prometheus
+## Enregistrer l'exporter dans Prometheus
 
-Create the prometheus system user and group:
+Créer l'utilisateur et le groupe système prometheus :
 
 ```
 useradd --home-dir /opt/prometheus --user-group --shell /usr/sbin/nologin --system prometheus
 ```
 
-Download prometheus binary and adapt following your Raspberry Pi architecture (here we use armv7):
+Télécharger le binaire prometheus et adapter selon l'architecture de votre Raspberry Pi (ici armv7) :
 
 ```
 cd /tmp
@@ -593,7 +582,7 @@ wget https://github.com/prometheus/prometheus/releases/download/v2.25.0/promethe
 tar xzf prometheus-2.25.0.linux-armv7.tar.gz
 ```
 
-Create the home directory for `prometheus` user in `/opt/prometheus`:
+Créer le répertoire home pour l'utilisateur `prometheus` dans `/opt/prometheus` :
 
 ```
 sudo cp -r prometheus-2.25.0.linux-armv7 /opt/prometheus
@@ -601,7 +590,7 @@ sudo chown prometheus:prometheus /opt/prometheus
 sudo chmod 0740 -R /opt/prometheus
 ```
 
-Create `/var/lib/prometheus` directory with good permissions for tsdb (time-series database) storage:
+Créer le répertoire `/var/lib/prometheus` avec les bonnes permissions pour le stockage tsdb (base de données de séries temporelles) :
 
 ```
 sudo mkdir /var/lib/prometheus
@@ -609,13 +598,13 @@ sudo chown -R prometheus:prometheus /var/lib/prometheus
 sudo chmod -R 0740 /var/lib/prometheus
 ```
 
-Create a symbolic link from the configuration presents in `/opt/prometheus` to `/etc`
+Créer un lien symbolique depuis la configuration dans `/opt/prometheus` vers `/etc` :
 
 ```
 sudo ln -s /opt/prometheus/prometheus.yml /etc/prometheus.yml
 ```
 
-Update the /etc/prometheus.yml and add a new job in scrape_configs block:
+Mettre à jour `/etc/prometheus.yml` et ajouter un nouveau job dans le bloc `scrape_configs` :
 
 ```yaml
 - job_name: 'dht-prometheus-exporter'
@@ -623,7 +612,7 @@ Update the /etc/prometheus.yml and add a new job in scrape_configs block:
     - targets: ['localhost:8080']
 ```
 
-Create a systemd unit for prometheus in `/etc/systemd/system/prometheus.service` as follows:
+Créer un service systemd pour prometheus dans `/etc/systemd/system/prometheus.service` :
 
 ```
 [Service]
@@ -647,7 +636,7 @@ Restart=always
 WantedBy=multi-user.target
 ```
 
-Start and enable prometheus service:
+Démarrer et activer le service prometheus :
 
 ```
 sudo systemctl daemon-reload
@@ -655,64 +644,54 @@ sudo systemctl start prometheus
 sudo systemctl enable prometheus
 ```
 
-Ensure prometheus is ok:
+Vérifier que prometheus fonctionne :
 
 ```
 sudo systemctl status prometheus --no-pager
 ```
 
-Note your Raspberry PI private IP using `ip a` command.
+Notez l'IP privée de votre Raspberry Pi avec la commande `ip a`.
 
-Open your browser and connect to it via TCP/8080 port with HTTP schema (e.g. http://<RASPBERRY_IP>:8080).
+Ouvrez votre navigateur et connectez-vous via le port TCP/8080 avec le schéma HTTP (ex. http://<IP_RASPBERRY>:8080).
 
-The exporter is well registered in the "Targets" menu:
+L'exporter est bien enregistré dans le menu "Targets" :
 
-![Raspberry AM2302 connection schema](/monitor-temperature-humidity-dht22-am2302-prometheus/exporter-registered-in-prometheus-targets.webp)
+![Exporter enregistré dans les targets Prometheus](/monitor-temperature-humidity-dht22-am2302-prometheus/exporter-registered-in-prometheus-targets.webp)
 
-On the homepage of the Prometheus UI, we type the names of both metrics from the exporter. They are present and show
-their labels we have defined before:
+Sur la page d'accueil de l'interface Prometheus, nous saisissons les noms des deux métriques de l'exporter. Elles sont présentes et affichent les labels définis précédemment :
 
-![Humidity metric](/monitor-temperature-humidity-dht22-am2302-prometheus/humidity-metrics-in-prometheus.webp)
+![Métrique d'humidité](/monitor-temperature-humidity-dht22-am2302-prometheus/humidity-metrics-in-prometheus.webp)
 
-![Temperature metric](/monitor-temperature-humidity-dht22-am2302-prometheus/temperature-metrics-in-prometheus.webp)
+![Métrique de température](/monitor-temperature-humidity-dht22-am2302-prometheus/temperature-metrics-in-prometheus.webp)
 
-We can also have a graph of the exporter metrics:
+On peut également afficher un graphe des métriques de l'exporter :
 
-![Humidity graph in Prometheus](/monitor-temperature-humidity-dht22-am2302-prometheus/metric-graph-in-prometheus.webp)
+![Graphe d'humidité dans Prometheus](/monitor-temperature-humidity-dht22-am2302-prometheus/metric-graph-in-prometheus.webp)
 
 ## Grafana
 
 ### Installation
 
-For Grafana, you can follow instructions from this link : https://grafana.com/tutorials/install-grafana-on-raspberry-pi
+Pour Grafana, vous pouvez suivre les instructions disponibles ici : https://grafana.com/tutorials/install-grafana-on-raspberry-pi
 
-### Dashboard creation
+### Création du dashboard
 
-We access the Grafana interface and create a new dashboard. On this dashboard, we add a separate graph for each metric:
-temperature and humidity.
+On accède à l'interface Grafana et on crée un nouveau dashboard. Sur ce dashboard, on ajoute un graphe séparé pour chaque métrique : température et humidité.
 
-For both graphs, we use the PromQL `avg_over_time` function with a 1-minute range vector. This approach helps smooth the
-data and prevents gaps or discontinuities in the graphs.
+Pour les deux graphes, on utilise la fonction PromQL `avg_over_time` avec un vecteur de plage d'1 minute. Cette approche lisse les données et évite les trous ou discontinuités dans les graphes.
 
-![Temperature panel in Grafana](/monitor-temperature-humidity-dht22-am2302-prometheus/temperature-grafana-panel.webp)
-![Humidity panel in Grafana](/monitor-temperature-humidity-dht22-am2302-prometheus/humidity-grafana-panel.webp)
+![Panel température dans Grafana](/monitor-temperature-humidity-dht22-am2302-prometheus/temperature-grafana-panel.webp)
+![Panel humidité dans Grafana](/monitor-temperature-humidity-dht22-am2302-prometheus/humidity-grafana-panel.webp)
 
 
 ## Conclusion
 
-Through these steps, we’ve built a complete monitoring system using a sensor and a Raspberry Pi. We wired the sensor,
-validated data acquisition, and successfully measured room temperature and humidity.
+À travers ces étapes, nous avons construit un système de monitoring complet à partir d'un capteur et d'un Raspberry Pi. Nous avons câblé le capteur, validé l'acquisition des données et mesuré avec succès la température et l'humidité ambiantes.
 
-To expose these metrics to Prometheus, we developed a custom exporter in Go that serves the data via an HTTP endpoint.
-We also added labels to our metrics, which is essential when tracking multiple sensors and distinguishing between them.
+Pour exposer ces métriques à Prometheus, nous avons développé un exporter personnalisé en Go qui sert les données via un endpoint HTTP. Nous avons aussi ajouté des labels à nos métriques, ce qui est essentiel pour suivre plusieurs capteurs et les distinguer.
 
-Next, we installed and configured Prometheus on the Raspberry Pi to scrape the exporter and store the metrics. Using
-Prometheus’s interface, we can query and analyze the data effectively.
+Ensuite, nous avons installé et configuré Prometheus sur le Raspberry Pi pour scraper l'exporter et stocker les métriques. Via l'interface de Prometheus, on peut interroger et analyser les données efficacement.
 
-While Prometheus provides basic visualization, we enhanced the experience by adding Grafana, creating a rich and
-interactive dashboard displaying temperature and humidity trends.
+Alors que Prometheus offre une visualisation basique, nous avons enrichi l'expérience en ajoutant Grafana, créant un dashboard riche et interactif affichant les tendances de température et d'humidité.
 
-This project demonstrates what’s possible with a Raspberry Pi and Prometheus, offering an end-to-end pipeline for data
-collection, storage, and visualization.
-
-I hope it inspires you for your next home automation or DIY monitoring projects.
+Ce projet couvre l'ensemble du pipeline : collecte, stockage et visualisation des données depuis un capteur physique.

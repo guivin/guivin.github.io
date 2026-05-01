@@ -1,15 +1,9 @@
 ---
-title: About
+title: Bio
 ---
 
-My journey in tech started back in 2013 as a sysadmin, deep in the world of Linux and open-source.
-I spent countless hours tinkering with servers, testing new stacks, and automating whatever I could.
-At the time, physical servers ruled, and cloud computing was just starting to gain traction but
-I could feel a shift coming.
+Mon parcours dans la tech a commencé en 2013, administrateur système plongé dans Linux et l'open-source. J'ai passé des longues heures à explorer des stacks, comprendre les systèmes de l'intérieur et automatiser tout ce que je pouvais — bien avant que "DevOps" ne devienne un buzzword.
 
-That’s when I realized automation was the future. I started coding to streamline my daily tasks,
-long before “DevOps” became the industry buzzword. As infrastructure moved towards code, I embraced new
-tools and methodologies to build more scalable, resilient systems.
+Ce qui m'a toujours poussé : comprendre pourquoi les systèmes cassent et construire pour que ça ne se reproduise plus. Pas de rustine : des architectures reproductibles qui tiennent dans le temps. Cela m'a naturellement amené à penser plateformes : construire des socles solides qui permettent de livrer en fiabilité, sans freiner la vitesse.
 
-Today, as a Site Reliability Engineer, I’m still learning, experimenting, and optimizing. This blog is my
-space to share insights, lessons, and thoughts on modern infrastructure, automation, and reliability.
+Ce blog documente ce que j'apprends en construisant au quotidien : comment l'architecture, l'infrastructure as code, l'observabilité et la scalabilité s'articulent sur des systèmes réels.
