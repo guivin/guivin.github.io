@@ -6,8 +6,6 @@ tags:
   - prometheus
 ---
 
-# Recording rules : la feature Prometheus que j'aurais dû connaître bien plus tôt
-
 Je voulais réaliser des stats de storage sur des Elasticsearch avec beaucoup d'index sur plus de 30 jours dans Grafana.
 
 Mon problème : agréger des métriques à forte cardinalité sur de longues périodes. Les panels étaient trop lents à 
