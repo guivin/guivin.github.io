@@ -7,6 +7,7 @@ module:
     - path: github.com/imfing/hextra
 
 enableGitInfo: true
+enableRobotsTXT: true
 
 permalinks:
   pages: /:slug
