@@ -24,7 +24,7 @@ export default defineConfig({
   integrations: [
     mdx(),
     sitemap({
-      filter: page =>
+      filter: (page) =>
         config.features?.showArchives !== false || !page.endsWith("/archives/"),
     }),
   ],
