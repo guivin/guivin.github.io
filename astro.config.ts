@@ -21,10 +21,11 @@ import config from "./astro-paper.config";
 
 export default defineConfig({
   site: config.site.url,
+  publicDir: "static",
   integrations: [
     mdx(),
     sitemap({
-      filter: page =>
+      filter: (page) =>
         config.features?.showArchives !== false || !page.endsWith("/archives/"),
     }),
   ],

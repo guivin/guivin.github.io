@@ -19,9 +19,9 @@ Dans cet article, nous allons déployer un serveur NGINX sur DigitalOcean en uti
 
 ## Prérequis
 
-* [Terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)
-* [Ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html)
-* Un compte DigitalOcean avec un [token configuré](https://docs.digitalocean.com/reference/api/create-personal-access-token/)
+- [Terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)
+- [Ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html)
+- Un compte DigitalOcean avec un [token configuré](https://docs.digitalocean.com/reference/api/create-personal-access-token/)
 
 Installer la collection Ansible `cloud.terraform` :
 
@@ -43,9 +43,10 @@ plugin: cloud.terraform.terraform_provider
 ## Écriture du code Terraform
 
 La configuration Terraform suivante provisionne une infrastructure sur DigitalOcean et l'intègre directement avec Ansible via le Terraform Ansible provider. Elle définit :
-* Les providers Terraform requis (DigitalOcean et Ansible)
-* Un Droplet provisionné via l'API DigitalOcean
-* Une entrée d'inventaire Ansible pour le Droplet, directement depuis l'état Terraform
+
+- Les providers Terraform requis (DigitalOcean et Ansible)
+- Un Droplet provisionné via l'API DigitalOcean
+- Une entrée d'inventaire Ansible pour le Droplet, directement depuis l'état Terraform
 
 ```hcl
 terraform {
@@ -98,12 +99,12 @@ output "ipv4_address" {
 }
 ```
 
-* Configuration des providers : le bloc `required_providers` déclare les dépendances sur les providers `ansible` et `digitalocean` avec un versionnage explicite pour la reproductibilité.
-* Token API : la variable `do_token` est marquée comme sensible, assurant un traitement sécurisé des credentials DigitalOcean.
-* Configuration SSH : votre clé publique SSH locale est uploadée sur DigitalOcean, permettant l'accès SSH au nouveau droplet.
-* Provisionnement du Droplet : un unique Droplet `web1` est créé avec Ubuntu 24.10 dans la région NYC2 avec un petit type d'instance.
-* Ressource d'inventaire Ansible : la ressource `ansible_host` mappe dynamiquement l'IP du Droplet dans un inventaire Ansible, garantissant que la gestion de configuration est directement alignée avec l'état Terraform.
-* Output IP : affiche l'IP du serveur provisionné après un apply réussi, pour se connecter ou vérifier facilement.
+- Configuration des providers : le bloc `required_providers` déclare les dépendances sur les providers `ansible` et `digitalocean` avec un versionnage explicite pour la reproductibilité.
+- Token API : la variable `do_token` est marquée comme sensible, assurant un traitement sécurisé des credentials DigitalOcean.
+- Configuration SSH : votre clé publique SSH locale est uploadée sur DigitalOcean, permettant l'accès SSH au nouveau droplet.
+- Provisionnement du Droplet : un unique Droplet `web1` est créé avec Ubuntu 24.10 dans la région NYC2 avec un petit type d'instance.
+- Ressource d'inventaire Ansible : la ressource `ansible_host` mappe dynamiquement l'IP du Droplet dans un inventaire Ansible, garantissant que la gestion de configuration est directement alignée avec l'état Terraform.
+- Output IP : affiche l'IP du serveur provisionné après un apply réussi, pour se connecter ou vérifier facilement.
 
 Appliquer le code Terraform avec votre token DigitalOcean :
 
@@ -122,23 +123,24 @@ $ ansible-inventory -i inventory.yml --graph --vars
 
 ## Ce que vous voyez expliqué
 
-* `@all` : représente tous les hôtes définis dans l'inventaire.
-* `@ungrouped` : hôtes qui ne sont affectés à aucun groupe spécifique.
-* `@webservers` : ce groupe inclut tous les hôtes étiquetés "webservers".
+- `@all` : représente tous les hôtes définis dans l'inventaire.
+- `@ungrouped` : hôtes qui ne sont affectés à aucun groupe spécifique.
+- `@webservers` : ce groupe inclut tous les hôtes étiquetés "webservers".
 
 Sous le groupe `@webservers`, l'hôte 162.243.103.221 a plusieurs variables attachées :
 
-* `ansible_python_interpreter = /usr/bin/python3` : chemin vers l'interpréteur Python sur la machine cible.
-* `ansible_ssh_common_args = -o StrictHostKeyChecking=no` : option SSH pour ignorer la vérification de la clé d'hôte lors de la connexion.
-* `ansible_ssh_private_key_file = ~/.ssh/id_rsa` : chemin vers la clé privée SSH utilisée pour l'authentification.
-* `ansible_user = root` : utilisateur avec lequel se connecter en SSH.
+- `ansible_python_interpreter = /usr/bin/python3` : chemin vers l'interpréteur Python sur la machine cible.
+- `ansible_ssh_common_args = -o StrictHostKeyChecking=no` : option SSH pour ignorer la vérification de la clé d'hôte lors de la connexion.
+- `ansible_ssh_private_key_file = ~/.ssh/id_rsa` : chemin vers la clé privée SSH utilisée pour l'authentification.
+- `ansible_user = root` : utilisateur avec lequel se connecter en SSH.
 
 ## Pourquoi c'est utile
 
 Cette sortie graphique vous aide à :
-* Comprendre la structure de votre inventaire d'un coup d'œil.
-* Vérifier que toutes les variables nécessaires sont correctement définies sur chaque hôte.
-* Déboguer et revoir votre configuration Ansible avant d'exécuter les playbooks.
+
+- Comprendre la structure de votre inventaire d'un coup d'œil.
+- Vérifier que toutes les variables nécessaires sont correctement définies sur chaque hôte.
+- Déboguer et revoir votre configuration Ansible avant d'exécuter les playbooks.
 
 ## Appliquer le playbook Ansible avec l'inventaire généré par Terraform
 
@@ -210,9 +212,9 @@ Dans cet article, nous avons exploré comment intégrer de manière fluide Terra
 
 En tirant parti de cette intégration :
 
-* Terraform s'occupe de créer les ressources cloud (VMs, réseaux, etc.)
-* Ansible gère la configuration de ces ressources (installation de paquets, démarrage de services, etc.)
-* Le Terraform Ansible provider fait le pont, en générant automatiquement des inventaires dynamiques depuis l'état Terraform
+- Terraform s'occupe de créer les ressources cloud (VMs, réseaux, etc.)
+- Ansible gère la configuration de ces ressources (installation de paquets, démarrage de services, etc.)
+- Le Terraform Ansible provider fait le pont, en générant automatiquement des inventaires dynamiques depuis l'état Terraform
 
 Cette approche élimine le besoin de gestion manuelle des inventaires et garantit la cohérence entre provisionnement et configuration.
 

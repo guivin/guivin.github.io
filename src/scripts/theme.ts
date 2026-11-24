@@ -49,7 +49,7 @@ document.addEventListener("astro:after-swap", setup);
 
 // Carry the theme-color value across View Transitions to prevent the
 // Android navigation bar from flashing during page transitions.
-document.addEventListener("astro:before-swap", event => {
+document.addEventListener("astro:before-swap", (event) => {
   const color = document
     .querySelector("meta[name='theme-color']")
     ?.getAttribute("content");

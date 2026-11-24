@@ -14,6 +14,7 @@ description: "Construire un système de monitoring DIY pour la température et l
 Surveiller les conditions environnementales permet de combiner l'IoT avec les outils d'observabilité cloud-native. Dans cet article, nous construisons une configuration pour surveiller la température et l'humidité à l'aide d'un Raspberry Pi et d'un capteur DHT22 (AM2302).
 
 Au programme :
+
 - câblage du capteur sur le Raspberry Pi
 - collecte des données du capteur
 - exposition des mesures via un exporter Prometheus personnalisé écrit en Go
@@ -27,13 +28,13 @@ L'AM2302 est une version filaire du DHT22. Peu coûteux et simple à intégrer a
 
 ### Caractéristiques principales :
 
-* Tension : 3V à 5V (logique et alimentation)
-* Consommation : max 2,5 mA lors des mesures
-* Plage d'humidité : 0–100% HR (±2–5%)
-* Plage de température : -40°C à +80°C (±0,5°C)
-* Fréquence d'échantillonnage : max une lecture toutes les 2 secondes (0,5 Hz)
-* Dimensions : 15,1 mm × 25 mm × 7,7 mm
-* Interface : header 4 broches (espacement 0,1")
+- Tension : 3V à 5V (logique et alimentation)
+- Consommation : max 2,5 mA lors des mesures
+- Plage d'humidité : 0–100% HR (±2–5%)
+- Plage de température : -40°C à +80°C (±0,5°C)
+- Fréquence d'échantillonnage : max une lecture toutes les 2 secondes (0,5 Hz)
+- Dimensions : 15,1 mm × 25 mm × 7,7 mm
+- Interface : header 4 broches (espacement 0,1")
 
 Il est suffisamment précis pour une utilisation en intérieur et facile à intégrer avec les GPIO d'un Raspberry Pi.
 
@@ -41,13 +42,12 @@ Il est suffisamment précis pour une utilisation en intérieur et facile à int�
 
 Le câblage de l'AM2302 est simple :
 
-| Broche capteur | Fonction       | Broche Raspberry Pi |
-|----------------|----------------|---------------------|
-| 1              | VCC (Alim.)    | 3,3V (Pin 1)        |
-| 2              | Data           | GPIO 4 (Pin 7)      |
-| 3              | Non utilisée   | -                   |
-| 4              | GND            | Ground (Pin 6)      |
-
+| Broche capteur | Fonction     | Broche Raspberry Pi |
+| -------------- | ------------ | ------------------- |
+| 1              | VCC (Alim.)  | 3,3V (Pin 1)        |
+| 2              | Data         | GPIO 4 (Pin 7)      |
+| 3              | Non utilisée | -                   |
+| 4              | GND          | Ground (Pin 6)      |
 
 ### Tester le capteur
 
@@ -89,6 +89,7 @@ Tout fonctionne correctement. On peut maintenant passer au développement de l'e
 ### Configuration
 
 La configuration est un fichier YAML dont l'emplacement suit cet ordre de priorité :
+
 1. `/etc/dht-prometheus-exporter.yml`
 2. `$HOME/dht-prometheus-exporter.yml`
 3. `$PWD/dht-prometheus-exporter.yml`
@@ -266,9 +267,9 @@ func (s *Sensor) readRetry() (humidity float64, temperature float64, err error) 
 
 Le package Prometheus fournit le collector. Il liste les différentes métriques à collecter et les expose. Les métriques d'humidité et de température sont dans le même collector. Les métriques ont des labels pour donner plus de contexte :
 
-* `dht_name` : nom du capteur pour l'identifier facilement (en cas de capteurs multiples)
-* `hostname`
-* `unit` : l'unité de température en Fahrenheit ou Celsius
+- `dht_name` : nom du capteur pour l'identifier facilement (en cas de capteurs multiples)
+- `hostname`
+- `unit` : l'unité de température en Fahrenheit ou Celsius
 
 Les fonctions Describe et Collect sont déjà implémentées dans le package Prometheus. Nous devons les redéfinir pour les surcharger avec nos métriques :
 
@@ -476,9 +477,9 @@ sudo ln -s /opt/prometheus/prometheus.yml /etc/prometheus.yml
 Mettre à jour `/etc/prometheus.yml` et ajouter un nouveau job dans le bloc `scrape_configs` :
 
 ```yaml
-- job_name: 'dht-prometheus-exporter'
+- job_name: "dht-prometheus-exporter"
   static_configs:
-    - targets: ['localhost:8080']
+    - targets: ["localhost:8080"]
 ```
 
 Créer un service systemd pour prometheus dans `/etc/systemd/system/prometheus.service` :
@@ -551,7 +552,6 @@ Pour les deux graphes, on utilise la fonction PromQL `avg_over_time` avec un vec
 
 ![Panel température dans Grafana](/monitor-temperature-humidity-dht22-am2302-prometheus/temperature-grafana-panel.webp)
 ![Panel humidité dans Grafana](/monitor-temperature-humidity-dht22-am2302-prometheus/humidity-grafana-panel.webp)
-
 
 ## Conclusion
 

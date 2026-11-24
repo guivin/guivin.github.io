@@ -8,10 +8,10 @@ function getPostPathSegments(filePath: string | undefined): string[] {
     filePath
       ?.replace(BLOG_PATH, "")
       .split("/")
-      .filter(path => path !== "")
-      .filter(path => !path.startsWith("_"))
+      .filter((path) => path !== "")
+      .filter((path) => !path.startsWith("_"))
       .slice(0, -1)
-      .map(segment => slugifyStr(segment)) ?? []
+      .map((segment) => slugifyStr(segment)) ?? []
   );
 }
 
@@ -46,7 +46,7 @@ export function getPostSlug(id: string, filePath: string | undefined): string {
 export function getPostUrl(
   id: string,
   filePath: string | undefined,
-  locale: string | undefined = config.site.lang
+  locale: string | undefined = config.site.lang,
 ): string {
   return getRelativeLocaleUrl(locale, `posts/${getPostSlugPath(id, filePath)}`);
 }

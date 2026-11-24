@@ -130,7 +130,7 @@ export interface ResolvedAstroPaperConfig {
  * Provides full IntelliSense without any runtime overhead.
  */
 export function defineAstroPaperConfig(
-  config: AstroPaperConfig
+  config: AstroPaperConfig,
 ): AstroPaperConfig {
   return config;
 }
