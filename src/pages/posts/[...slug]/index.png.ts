@@ -12,11 +12,11 @@ export async function getStaticPaths() {
     return [];
   }
 
-  const posts = await getCollection("posts").then(p =>
-    p.filter(({ data }) => !data.draft && !data.ogImage)
+  const posts = await getCollection("posts").then((p) =>
+    p.filter(({ data }) => !data.draft && !data.ogImage),
   );
 
-  return posts.map(post => ({
+  return posts.map((post) => ({
     params: { slug: getPostSlug(post.id, post.filePath) },
     props: post,
   }));
@@ -36,11 +36,11 @@ export const GET: APIRoute = async ({ props, url }) => {
   }
 
   const [regularData, boldData] = await Promise.all([
-    fetch(experimental_getFontFileURL(regularFontPath, url)).then(res =>
-      res.arrayBuffer()
+    fetch(experimental_getFontFileURL(regularFontPath, url)).then((res) =>
+      res.arrayBuffer(),
     ),
-    fetch(experimental_getFontFileURL(boldFontPath, url)).then(res =>
-      res.arrayBuffer()
+    fetch(experimental_getFontFileURL(boldFontPath, url)).then((res) =>
+      res.arrayBuffer(),
     ),
   ]);
 
@@ -185,7 +185,7 @@ export const GET: APIRoute = async ({ props, url }) => {
           style: "normal",
         },
       ],
-    }
+    },
   );
 
   const pngBuffer = await sharp(Buffer.from(svg)).png().toBuffer();
